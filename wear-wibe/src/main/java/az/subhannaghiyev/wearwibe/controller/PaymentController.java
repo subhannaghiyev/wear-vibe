@@ -1,5 +1,6 @@
 package az.subhannaghiyev.wearwibe.controller;
 
+import az.subhannaghiyev.wearwibe.dto.PaymentResponseDto;
 import az.subhannaghiyev.wearwibe.entity.Payment;
 import az.subhannaghiyev.wearwibe.entity.enums.PaymentStatus;
 import az.subhannaghiyev.wearwibe.service.PaymentService;
@@ -17,27 +18,27 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public ResponseEntity<Payment> createPayment(@RequestBody Payment payment) {
+    public ResponseEntity<PaymentResponseDto> createPayment(@RequestBody Payment payment) {
         return ResponseEntity.ok(paymentService.createPayment(payment));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Payment> getPaymentById(@PathVariable Long id) {
+    public ResponseEntity<PaymentResponseDto> getPaymentById(@PathVariable Long id) {
         return ResponseEntity.ok(paymentService.getPaymentById(id));
     }
 
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<Payment> getPaymentByOrderId(@PathVariable Long orderId) {
+    public ResponseEntity<PaymentResponseDto> getPaymentByOrderId(@PathVariable Long orderId) {
         return ResponseEntity.ok(paymentService.getPaymentByOrderId(orderId));
     }
 
     @GetMapping
-    public ResponseEntity<List<Payment>> getAllPayments() {
+    public ResponseEntity<List<PaymentResponseDto>> getAllPayments() {
         return ResponseEntity.ok(paymentService.getAllPayments());
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<Payment> updatePaymentStatus(
+    public ResponseEntity<PaymentResponseDto> updatePaymentStatus(
             @PathVariable Long id,
             @RequestParam PaymentStatus status
     ) {

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "payments")
 public class Payment extends BaseEntity{
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 
@@ -37,7 +37,7 @@ public class Payment extends BaseEntity{
 
     private String cardLast4Digits;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

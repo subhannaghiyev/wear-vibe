@@ -1,6 +1,8 @@
 package az.subhannaghiyev.wearwibe.service.impl;
 
+import az.subhannaghiyev.wearwibe.dto.UserResponseDto;
 import az.subhannaghiyev.wearwibe.entity.User;
+import az.subhannaghiyev.wearwibe.mapper.UserMapper;
 import az.subhannaghiyev.wearwibe.repository.UserRepository;
 import az.subhannaghiyev.wearwibe.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,24 +16,28 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
-    public User saveUser(User user) {
-        return userRepository.save(user);
+    public UserResponseDto saveUser(User userRequestDto) {
+        User user = userRepository.save(userRequestDto);
+        return userMapper.toDto(user);
     }
 
     @Override
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserResponseDto> getUserById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        return user.map(userMapper::toDto);
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return userMapper.toDtoList(users);
     }
 
     @Override
-    public User updateUser(Long id, User userDetails) {
+    public UserResponseDto updateUser(Long id, User userDetails) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
         user.setName(userDetails.getName());
@@ -39,7 +45,9 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDetails.getEmail());
         user.setMobileNumber(userDetails.getMobileNumber());
         user.setPassword(userDetails.getPassword());
-        return userRepository.save(user);
+        userRepository.save(user);
+
+        return userMapper.toDto(user);
     }
 
     @Override

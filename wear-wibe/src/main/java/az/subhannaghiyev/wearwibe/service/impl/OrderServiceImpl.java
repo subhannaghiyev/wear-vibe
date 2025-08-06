@@ -1,8 +1,10 @@
 package az.subhannaghiyev.wearwibe.service.impl;
 
+import az.subhannaghiyev.wearwibe.dto.OrderResponseDto;
 import az.subhannaghiyev.wearwibe.entity.Order;
 import az.subhannaghiyev.wearwibe.entity.Product;
 import az.subhannaghiyev.wearwibe.entity.enums.OrderStatus;
+import az.subhannaghiyev.wearwibe.mapper.OrderMapper;
 import az.subhannaghiyev.wearwibe.repository.OrderRepository;
 import az.subhannaghiyev.wearwibe.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -24,26 +26,33 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
 
     @Override
-    public Order createOrder(Order order) {
-        return orderRepository.save(order);
+    public OrderResponseDto createOrder(Order order) {
+        Order savedOrder = orderRepository.save(order);
+        return orderMapper.toDto(savedOrder);
     }
 
     @Override
-    public Order findById(Long id) {
-        return orderRepository.findById(id)
+    public OrderResponseDto findById(Long id) {
+        Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+        return orderMapper.toDto(order);
     }
 
     @Override
-    public Page<Order> findAll(Pageable pageable) {
-        return orderRepository.findAll(pageable);
+    public Page<OrderResponseDto> findAll(Pageable pageable) {
+        return orderRepository.findAll(pageable)
+                .map(orderMapper::toDto);
     }
 
     @Override
-    public List<Order> findByUserId(Long userId) {
-        return orderRepository.findByUserId(userId);
+    public List<OrderResponseDto> findByUserId(Long userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return orders.stream()
+                .map(orderMapper::toDto)
+                .toList();
     }
 
     @Override
@@ -63,12 +72,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findByOrderDateBetween(LocalDateTime start, LocalDateTime end) {
-        return orderRepository.findByOrderDateBetween(start, end);
+    public List<OrderResponseDto> findByOrderDateBetween(LocalDateTime start, LocalDateTime end) {
+        List<Order> orders = orderRepository.findByOrderDateBetween(start, end);
+        return orders.stream()
+                .map(orderMapper::toDto)
+                .toList();
     }
 
     @Override
-    public Order updateOrderStatus(Long orderId, Map<String, String> status) {
+    public OrderResponseDto updateOrderStatus(Long orderId, Map<String, String> status) {
         String statusStr = status.get("status");
         if (Objects.isNull(statusStr)) {
             throw new IllegalArgumentException("Status sahəsi göndərilməyib");
@@ -85,7 +97,8 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("Order tapılmadı: " + orderId));
 
         order.setStatus(newStatus);
-        return orderRepository.save(order);
+        Order updatedOrder = orderRepository.save(order);
+        return orderMapper.toDto(updatedOrder);
     }
 
     @Override
@@ -99,8 +112,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findOrdersByProductId(Long productId) {
-        return orderRepository.findByItemsProductId(productId);
+    public List<OrderResponseDto> findOrdersByProductId(Long productId) {
+        List<Order> orders = orderRepository.findByItemsProductId(productId);
+        return orders.stream()
+                .map(orderMapper::toDto)
+                .toList();
     }
 
     @Override

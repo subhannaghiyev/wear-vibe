@@ -1,6 +1,7 @@
 package az.subhannaghiyev.wearwibe.controller;
 
 
+import az.subhannaghiyev.wearwibe.dto.UserResponseDto;
 import az.subhannaghiyev.wearwibe.entity.User;
 import az.subhannaghiyev.wearwibe.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,26 +18,26 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = userService.saveUser(user);
+    public ResponseEntity<UserResponseDto> createUser(@RequestBody User user) {
+        UserResponseDto createdUser = userService.saveUser(user);
         return ResponseEntity.ok(createdUser);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
+        List<UserResponseDto> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
         return ResponseEntity.ok(userService.updateUser(id, userDetails));
     }
 

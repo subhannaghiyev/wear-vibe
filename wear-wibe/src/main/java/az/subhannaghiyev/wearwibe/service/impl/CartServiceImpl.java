@@ -1,9 +1,11 @@
 package az.subhannaghiyev.wearwibe.service.impl;
 
+import az.subhannaghiyev.wearwibe.dto.CartResponseDto;
 import az.subhannaghiyev.wearwibe.entity.Cart;
 import az.subhannaghiyev.wearwibe.entity.CartItem;
 import az.subhannaghiyev.wearwibe.entity.Product;
 import az.subhannaghiyev.wearwibe.entity.User;
+import az.subhannaghiyev.wearwibe.mapper.CartMapper;
 import az.subhannaghiyev.wearwibe.repository.CartRepository;
 import az.subhannaghiyev.wearwibe.repository.ProductRepository;
 import az.subhannaghiyev.wearwibe.repository.UserRepository;
@@ -20,11 +22,12 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final CartMapper cartMapper;
 
 
     @Override
-    public Cart getCartByUserId(Long userId) {
-        return cartRepository.findByUserId(userId)
+    public CartResponseDto getCartByUserId(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     User user = userRepository.findById(userId)
                             .orElseThrow(() -> new RuntimeException("User not found"));
@@ -32,15 +35,17 @@ public class CartServiceImpl implements CartService {
                     newCart.setUser(user);
                     return cartRepository.save(newCart);
                 });
+        return cartMapper.toDto(cart);
     }
 
     @Override
-    public Cart addProductToCart(Long userId, Long productId, int quantity) {
-        Cart cart = getCartByUserId(userId);
+    public CartResponseDto addProductToCart(Long userId, Long productId, int quantity) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user " + userId));
+
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // CartItem varsa miqdar artır, yoxdursa yeni əlavə et
         Optional<CartItem> existingItem = cart.getCartItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst();
@@ -56,23 +61,30 @@ public class CartServiceImpl implements CartService {
             cart.getCartItems().add(newItem);
         }
 
-        return cartRepository.save(cart);
+        Cart savedCart = cartRepository.save(cart);
+        return cartMapper.toDto(savedCart);
     }
 
     @Override
-    public Cart removeProductFromCart(Long userId, Long productId) {
-        Cart cart = getCartByUserId(userId);
+    public CartResponseDto removeProductFromCart(Long userId, Long productId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user " + userId));
 
         cart.getCartItems().removeIf(item -> item.getProduct().getId().equals(productId));
 
-        return cartRepository.save(cart);
+        Cart savedCart = cartRepository.save(cart);
+        return cartMapper.toDto(savedCart);
     }
 
     @Override
-    public Cart clearCart(Long userId) {
-        Cart cart = getCartByUserId(userId);
+    public CartResponseDto clearCart(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user " + userId));
+
         cart.getCartItems().clear();
-        return cartRepository.save(cart);
+
+        Cart savedCart = cartRepository.save(cart);
+        return cartMapper.toDto(savedCart);
     }
 
     @Override

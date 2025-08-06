@@ -1,5 +1,6 @@
 package az.subhannaghiyev.wearwibe.controller;
 
+import az.subhannaghiyev.wearwibe.dto.CartResponseDto;
 import az.subhannaghiyev.wearwibe.entity.Cart;
 import az.subhannaghiyev.wearwibe.service.CartService;
 import lombok.RequiredArgsConstructor;
@@ -14,36 +15,36 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Cart> getCart(@PathVariable Long userId) {
-        Cart cart = cartService.getCartByUserId(userId);
+    public ResponseEntity<CartResponseDto> getCart(@PathVariable Long userId) {
+        CartResponseDto cart = cartService.getCartByUserId(userId);
         return ResponseEntity.ok(cart);
     }
 
     // Səbətə məhsul əlavə et
     @PostMapping("/{userId}/add")
-    public ResponseEntity<Cart> addProductToCart(
+    public ResponseEntity<CartResponseDto> addProductToCart(
             @PathVariable Long userId,
             @RequestParam Long productId,
             @RequestParam int quantity) {
 
-        Cart updatedCart = cartService.addProductToCart(userId, productId, quantity);
+        CartResponseDto updatedCart = cartService.addProductToCart(userId, productId, quantity);
         return ResponseEntity.ok(updatedCart);
     }
 
     // Səbətdən məhsul çıxar
     @DeleteMapping("/{userId}/remove")
-    public ResponseEntity<Cart> removeProductFromCart(
+    public ResponseEntity<CartResponseDto> removeProductFromCart(
             @PathVariable Long userId,
             @RequestParam Long productId) {
 
-        Cart updatedCart = cartService.removeProductFromCart(userId, productId);
+        CartResponseDto updatedCart = cartService.removeProductFromCart(userId, productId);
         return ResponseEntity.ok(updatedCart);
     }
 
     // Səbəti boşalt
     @DeleteMapping("/{userId}/clear")
-    public ResponseEntity<Cart> clearCart(@PathVariable Long userId) {
-        Cart clearedCart = cartService.clearCart(userId);
+    public ResponseEntity<CartResponseDto> clearCart(@PathVariable Long userId) {
+        CartResponseDto clearedCart = cartService.clearCart(userId);
         return ResponseEntity.ok(clearedCart);
     }
 

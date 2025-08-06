@@ -1,5 +1,6 @@
 package az.subhannaghiyev.wearwibe.service;
 
+import az.subhannaghiyev.wearwibe.dto.ProductResponseDto;
 import az.subhannaghiyev.wearwibe.entity.Product;
 import az.subhannaghiyev.wearwibe.entity.enums.Category;
 import org.springframework.data.domain.Page;
@@ -11,18 +12,18 @@ import java.util.Optional;
 
 public interface ProductService {
 
-    Product saveProduct(Product product);
-    Optional<Product> getProductById(Long id);
-    List<Product> getAllProducts();
-    Product updateProduct(Long id, Product productDetails);
+    ProductResponseDto saveProduct(Product product);
+    Optional<ProductResponseDto> getProductById(Long id);
+    List<ProductResponseDto> getAllProducts();
+    ProductResponseDto updateProduct(Long id, Product productDetails);
     void deleteProduct(Long id);
-    Page<Product> search(String keyword,
+    Page<ProductResponseDto> search(String keyword,
                          Category category,
                          String color,
                          BigDecimal minPrice,
                          BigDecimal maxPrice,
                          Pageable pageable);
 
-    List<Product> getSimilarProducts(Long productId);
+    List<ProductResponseDto> getSimilarProducts(Long productId);
 
 }

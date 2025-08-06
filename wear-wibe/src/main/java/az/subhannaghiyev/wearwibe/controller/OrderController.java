@@ -1,5 +1,6 @@
 package az.subhannaghiyev.wearwibe.controller;
 
+import az.subhannaghiyev.wearwibe.dto.OrderResponseDto;
 import az.subhannaghiyev.wearwibe.entity.Order;
 import az.subhannaghiyev.wearwibe.entity.Product;
 import az.subhannaghiyev.wearwibe.entity.enums.OrderStatus;
@@ -25,30 +26,30 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-        Order createdOrder = orderService.createOrder(order);
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody Order order) {
+        OrderResponseDto createdOrder = orderService.createOrder(order);
         return ResponseEntity.ok(createdOrder);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        Order order = orderService.findById(id);
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Long id) {
+        OrderResponseDto order = orderService.findById(id);
         return ResponseEntity.ok(order);
     }
 
     @GetMapping
-    public ResponseEntity<Page<Order>> getAllOrders(
+    public ResponseEntity<Page<OrderResponseDto>> getAllOrders(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Order> orders = orderService.findAll(pageable);
+        Page<OrderResponseDto> orders = orderService.findAll(pageable);
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Order>> getOrdersByUserId(@PathVariable Long userId) {
-        List<Order> orders = orderService.findByUserId(userId);
+    public ResponseEntity<List<OrderResponseDto>> getOrdersByUserId(@PathVariable Long userId) {
+        List<OrderResponseDto> orders = orderService.findByUserId(userId);
         return ResponseEntity.ok(orders);
     }
 
@@ -68,20 +69,20 @@ public class OrderController {
     }
 
     @GetMapping("/by-date-range")
-    public ResponseEntity<List<Order>> getOrdersByDateRange(
+    public ResponseEntity<List<OrderResponseDto>> getOrdersByDateRange(
             @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
     ) {
-        List<Order> orders = orderService.findByOrderDateBetween(start, end);
+        List<OrderResponseDto> orders = orderService.findByOrderDateBetween(start, end);
         return ResponseEntity.ok(orders);
     }
 
     @PutMapping("/{orderId}/status")
-    public ResponseEntity<Order> updateOrderStatus(
+    public ResponseEntity<OrderResponseDto> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestBody Map<String, String> status) {
 
-        Order updatedOrder = orderService.updateOrderStatus(orderId, status);
+        OrderResponseDto updatedOrder = orderService.updateOrderStatus(orderId, status);
         return ResponseEntity.ok(updatedOrder);
     }
 
@@ -93,8 +94,8 @@ public class OrderController {
 
     // 2. Məhsula görə sifarişlərin siyahısı
     @GetMapping("/by-product/{productId}")
-    public ResponseEntity<List<Order>> findOrdersByProductId(@PathVariable Long productId) {
-        List<Order> orders = orderService.findOrdersByProductId(productId);
+    public ResponseEntity<List<OrderResponseDto>> findOrdersByProductId(@PathVariable Long productId) {
+        List<OrderResponseDto> orders = orderService.findOrdersByProductId(productId);
         return ResponseEntity.ok(orders);
     }
 
